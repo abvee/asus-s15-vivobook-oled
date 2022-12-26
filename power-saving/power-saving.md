@@ -120,8 +120,14 @@ standby (S1) don't seem to exist. S3 is the only sleep state to exist apart from
 hibernation through the `[deep]` option, and `[s2idle]` might as well not exist.
 
 ### nmi\_watchdog=0
-I don't care for monitoring for kernel crashes on a laptop, so watchdog can be
-disabled.
+This kernel option seems to do nothing at all, because `pgrep watchdog` still
+returns something, which is annoying. Further more, the watchdog module
+iTCO\_wdt don't seem to work at all.
+
+Changing `#RuntimeWatchdogSec=off` in `/etc/systemd/system.conf` should turn it
+off, but I'll keep you updated.
+
+If that also doesn't work, I'll try blacklisting the module
 
 ## Module configuration
 Some module options save power, on wifi and pcie and stuff
