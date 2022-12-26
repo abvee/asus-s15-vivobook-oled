@@ -21,4 +21,20 @@ The media keys for `F8` and F7` don't show any syms when checked with `wev` as
 though they don't exist, on my machine.
 
 ## Common Configuration
-Function keys and not media keys 
+Function keys and not media keys are set by default. So pressing `F5` doesn't
+increase the volume, but does `F5`. This is highly annoying, and to change it,
+put this in your `/etc/modprobe.d/\<name of file\>.conf`:
+```
+options asus_wmi fnlock_default=N
+```
+You can find the current value in `/sys/module/asus\_wmi/parameters/fnlock\_default`
+
+## Bluetooth
+My headphones don't like when pipewire does automatic switching of HSP/HFP and
+A2DP profiles, and it crackles the audio.
+
+Adding this to `~/.config/wireplumber/policy.lua.d/11-bluetooth-policy.lua`
+fixes the issue:
+```
+bluetooth_policy.policy["media-role.use-headset-profile"] = false
+```
