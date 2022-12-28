@@ -131,17 +131,17 @@ Switching it to `[s2idle]` is not a lot better, and suffers from these problems:
 
 Sleep seems to be a glorious mess. S0 sleep / Modern standby or even regular
 standby (S1) don't seem to exist. S3 is the only sleep state to exist apart from
-hibernation through the `[deep]` option, and `[s2idle]` might as well not exist.
+hibernation through the `[deep]` option, and `[s2idle]` might as well not exist
+becuase it is practically useless.
 
 ### nmi\_watchdog=0
 This kernel option seems to do nothing at all, because `pgrep watchdog` still
 returns something, which is annoying. Further more, the watchdog module
-iTCO\_wdt don't seem to work at all.
+iTCO\_wdt won't disable itself after the kernel line option is given.
 
 Changing `#RuntimeWatchdogSec=off` in `/etc/systemd/system.conf` should turn it
-off, but I'll keep you updated.
-
-UPDATE: didn't work, I stopped caring, and just let the watchdog run for now
+off, but it doesn't, and `pgrep watchdog` still returns a value, and iTCO\_wdt
+is still loaded.
 
 ## Module configuration
 Some module options save power, on wifi and pcie and stuff
