@@ -20,6 +20,17 @@ does nothing at all.
 
 However, the `acpi_cpufreq` driver responds correctly, so we will use it.
 
+There one caveat however. Running `cpupower frequency-info` gives us this line:
+```
+hardware limits: 400 MHz - 3.10 GHz
+```
+Basically, we are limited to 3.10GHz instead of the advertised 4.5GHz on this
+laptop if we use this driver. That is a sacrifice I'm willing to make for more
+battery life, as I know if I need the performance, I can always switch back to
+the `intel_pstate` driver, but your preference may vary. It is also possible
+that with future kernel updates, the pstate driver becomes the better option, so
+I'm gonna keep testing both drivers every time.
+
 ### mem\_sleep\_default=deep and sleep in general
 Output of `cat /sys/power/state`:
 ```
@@ -127,7 +138,7 @@ iTCO\_wdt don't seem to work at all.
 Changing `#RuntimeWatchdogSec=off` in `/etc/systemd/system.conf` should turn it
 off, but I'll keep you updated.
 
-If that also doesn't work, I'll try blacklisting the module
+UPDATE: didn't work, I stopped caring, and just let the watchdog run for now
 
 ## Module configuration
 Some module options save power, on wifi and pcie and stuff
@@ -150,3 +161,57 @@ The `iwlmvm` option is there because for some reason, that module uses the
 ### ASPM
 Active state Power management should not exist on this model of laptop, because
 the command `lspci -vv|grep -i aspm` returns absolutely nothing.
+
+However, other things that relate to ASPM like this file:
+`/sys/module/pcie_aspm/parameters/policy` that dictate ASPM policy exist. I am
+unsure as to if ASPM exists or not on this computer, especially, since I can
+write "powersave" to that file, which should not work unless ASPM exits.
+
+I can always try and force it with kernel line `pcie_aspm=force`, but I feel
+like that might half work, and half not work, so I'm not gonna try it.
+
+Either ways, I'll probably try a service which echos "powersave" or
+"powersupersave" to the required file later on, even though no module should
+exit for it.
+
+## cpupower
+This is a very simple section about how you can use cpupower to set the governor
+and limit maximum frequency.
+
+### Scaling governors
+As recalled in the "Kernel Parameters" section, we are using the `acpi_cpufreq`
+driver and not the `intel_pstate` driver. Thus, by default we are using the
+`schedutil` scaling governor, which can be seen in this file:
+
+`/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`
+
+In that folder you will also find a bunch of handy files:
+* `scaling_available_governors` which contains what governors are available
+* `scaling_available_frequencies` which contains what frequencies we can properly set
+* `scaling_driver` and `scaling_governor` are exactly what you think
+
+We can set the governor manually by either writing to the `scaling_governor`
+file (eg `echo powersave > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`).
+However, I like to use `cpupower` manually with:
+
+`cpupower -g *governor*` or through the `/etc/default/cpupower` file which is
+pretty straight forward, and is run when the `cpupower.service` file is enabled
+by systemd.
+
+So, the file looks like this:
+```
+governor='powersave'
+
+# Limit frequency range
+# Valid suffixes: Hz, kHz (default), MHz, GHz, THz
+#min_freq="2.25GHz"
+max_freq="1.4GHz"
+```
+Your file might contain more detailed documentation ;)
+### Scaling frequencies
+Also in `/sys/devices/system/cpu/cpu0/cpufreq/` are the 2 files:
+* `scaling_max_freq` which sets max frequency
+* `scaling_min_freq` which sets min frequency
+
+As usual, these can be set manually by echoing values to them, but using
+`cpupower` is just more convinient.
