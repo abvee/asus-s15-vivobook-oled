@@ -218,3 +218,16 @@ Also in `/sys/devices/system/cpu/cpu0/cpufreq/` are the 2 files:
 
 As usual, these can be set manually by echoing values to them, but using
 `cpupower` is just more convinient.
+
+## Results
+Previously, without any configuration, Fedora with GNOME would idle at around
+7-8 W. Switching to Arch and using something lighter (sway) reduced that number
+to around 5-6 W on idle.
+
+After all the configuration however, The system idles at nearly 3.4-4 W when
+doing nothing, and rarely goes beyond 10W even when running firefox. There are
+still a number of power saving things that I have not done, like ASPM and
+powering off bluetooth when not in use. If I can get it to 3W on idle, I would
+be very happy.
+
+As it is now however, it is perfectly usable, and you get decent battery life.
