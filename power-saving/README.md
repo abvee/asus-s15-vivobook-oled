@@ -53,8 +53,8 @@ In breif however,
 `state` file. Stands for `suspend to RAM` or `S3` sleep
 
 This is used in conjucntion with `systemd-logind` to set the sleep state when
-the laptop lid is closed. Note that acpid is not used because I don't want to
-use another program.
+the laptop lid is closed. Note that acpid is not used to set the sleep state
+because I don't want to use another program.
 
 Output of `cat /etc/systemd/logind.conf`:
 ```
@@ -96,6 +96,8 @@ HandleLidSwitchDocked=ignore
 #SessionsMax=8192
 #StopIdleSessionSec=infinity
 ```
+`HandleLidSwitch` tells systemd what to do when the laptop lid is closed. I have
+set it to suspend, which is also the default option.
 Check out this [arch wiki](https://wiki.archlinux.org/title/Power_management#Power_management_with_systemd) page as well.
 
 It describes all the options that `HandleLidSwitch` can have, as well as what
@@ -104,9 +106,10 @@ other options mean.
 Over here though, `suspend` means put the laptop in the state that is the
 contents of `mem` in the `/sys/power/state` file.
 
-Closing the laptop lid reliably puts the suspend. Systemd also sends the right
-messages to the session through `dbus`, because `swaylock` works as expected,
-and locks the screen and everything before the laptop is put to sleep.
+Closing the laptop lid reliably puts the system into deep sleep, which is what
+we hav set our `mem` value to. Systemd also sends the right
+messages to the session through `dbus`, because `swaylock` and `swayidle` work as expected,
+and locks the screen before the laptop is put to sleep.
 #### Problems with sleep
 However, not everything is sunshine and roses.
 
