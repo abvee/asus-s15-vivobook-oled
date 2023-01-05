@@ -251,7 +251,15 @@ As usual, these can be set manually by echoing values to them, but using
 `cpupower` is just more convinient.
 
 ## Problem
-Idle power usage changes with battery level
+Idle power usage changes with battery level. For whatever reason, idle power
+draw when the battery level is higher is also higher.
+
+Idles at around `5.8W` when the battery is around 80%, but drops to `3.4W` when
+the battery is around 25%. The goal is to try and get the laptop to idle at
+around `3W` even when the battery is at 80%.
+
+If you find a solution to this issue, please let me know by creating a pull
+request, or even just creating an issue.
 
 ## Results
 Previously, without any configuration, Fedora with GNOME would idle at around
