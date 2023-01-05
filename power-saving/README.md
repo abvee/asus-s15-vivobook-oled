@@ -3,6 +3,10 @@ This is to document all the power saving steps I took on the ASUS S15 OLED,
 version K3502ZA.306 (that last 306 might be BIOS version, so don't think too
 much of it).
 
+The goal is to lower power consumption as much as possible for a long battery
+life. Most of these modifications can be done with only installing `cpupower` or
+installing nothing at all.
+
 ## Kernel Parameters
 
 Power relevant kernel parameters I put in `/etc/default/grub`:
