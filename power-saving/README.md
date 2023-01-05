@@ -41,6 +41,10 @@ Power relevant kernel parameters I put in `/etc/default/grub`:
 `GRUB_CMDLINE_LINUX_DEFAULT="intel_pstate=disable mem_sleep_default=deep
 nmi_watchdog=0"` 
 ### intel\_pstate=disable
+This has to do with drivers controlling cpu frequency. By default, most kernels
+will use the `intel_pstate` driver. Usually, a fallback driver is
+`acpi_cpufreq`.
+
 Intel Pstate on this laptop is a large pile of horse shit. For one, `cpupower`
 settings don't work (see later section on cpupower). The CPU is constantly stuck
 at a minimum frequency of 3.1 GHz, and
@@ -51,16 +55,18 @@ does nothing at all.
 
 However, the `acpi_cpufreq` driver responds correctly, so we will use it.
 
-There one caveat however. Running `cpupower frequency-info` gives us this line:
+There one caveat however. Running `cpupower frequency-info` when we are using
+the `acpi_cpufreq` driver gives us this line:
 ```
 hardware limits: 400 MHz - 3.10 GHz
 ```
 Basically, we are limited to 3.10GHz instead of the advertised 4.5GHz on this
 laptop if we use this driver. That is a sacrifice I'm willing to make for more
 battery life, as I know if I need the performance, I can always switch back to
-the `intel_pstate` driver, but your preference may vary. It is also possible
+the `intel_pstate` driver by deleting this option in the kernel line
+, but your preference may vary. It is also possible
 that with future kernel updates, the pstate driver becomes the better option, so
-I'm gonna keep testing both drivers every time.
+I'm gonna keep testing both drivers every time there is a kernel update.
 
 ### mem\_sleep\_default=deep and sleep in general
 Output of `cat /sys/power/state`:
@@ -72,7 +78,9 @@ Output of `cat /sys/power/mem_sleep`:
 ```
 s2idle [deep]
 ```
-A detailed meaning of all of these can be found in the [kernel docs](https://www.kernel.org/doc/html/v4.15/admin-guide/pm/sleep-states.html).
+A detailed meaning of all of these can be found in the [kernel docs](https://www.kernel.org/doc/html/v4.15/admin-guide/pm/sleep-states.html)
+as well as a detailed explanation of what sleep states are and what benefits
+each has. I recommend reading the linked kernel doc first before proceeding.
 
 In breif however,
 * `freeze` stands for `s2idle` sleep state, which is the suspend-to-idle state
