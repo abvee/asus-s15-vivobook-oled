@@ -7,6 +7,33 @@ The goal is to lower power consumption as much as possible for a long battery
 life. Most of these modifications can be done with only installing `cpupower` or
 installing nothing at all.
 
+## Monitoring Power
+On this particular laptop, there are 2 folders in the `/sys/class/power_supply`
+directory. They are `AC0` and `BAT0` standing for the AC input and battery
+respectively.
+
+We want the power drawn from the battery, and `AC0` is does not contain any
+particularly useful information.
+
+The `/sys/class/power_supply/BAT0` directory on this laptop with Arch's 6.1.2
+kernel does **NOT** have a commonly found file called `power_now`, which would
+tell us how much power was drawn.
+It does have `current_now` and `voltage_now` files though, which tell us in real
+time the current and voltage from the battery when it is discharging.
+
+A simple bash script (found on [stack exchange](https://unix.stackexchange.com/questions/10418/how-to-find-power-draw-in-watts))
+looks like this:
+```
+echo - | awk "{printf \"%.1f\", \
+$(( \
+  $(cat /sys/class/power_supply/BAT0/current_now) * \
+  $(cat /sys/class/power_supply/BAT0/voltage_now) \
+)) / 1000000000000 }" ; echo " W "
+
+```
+Note that we need `awk` here for precision calculation. You could write the same
+thing in python or any other high level language.
+
 ## Kernel Parameters
 
 Power relevant kernel parameters I put in `/etc/default/grub`:
@@ -222,6 +249,9 @@ Also in `/sys/devices/system/cpu/cpu0/cpufreq/` are the 2 files:
 
 As usual, these can be set manually by echoing values to them, but using
 `cpupower` is just more convinient.
+
+## Problem
+Idle power usage changes with battery level
 
 ## Results
 Previously, without any configuration, Fedora with GNOME would idle at around
