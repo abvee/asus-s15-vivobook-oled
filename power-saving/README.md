@@ -91,11 +91,18 @@ In breif however,
 * `deep` in the `mem_sleep` file gives the value of `s2idle` to `mem` in the
 `state` file. Stands for `suspend to RAM` or `S3` sleep
 
-This is used in conjucntion with `systemd-logind` to set the sleep state when
-the laptop lid is closed. Note that acpid is not used to set the sleep state
-because I don't want to use another program.
+On the laptop, I want this type of sleep to only occur when the lid is closed,
+or perhaps through `swayidle`, though I have not done anything about that yet.
 
-Output of `cat /etc/systemd/logind.conf`:
+`systemd-logind` is the default way to handle `acpi` events. `acpid` can also be
+used, but I don't want to use it becuase it's just another program, and it makes
+things more complicated.
+
+However, it might be possible that the problems that occur with sleep
+(described later on) might not occur if `acpid` is used. I personally have not
+tested it.
+
+Output of `cat /etc/systemd/logind.conf` (systemd-logind's configuration file):
 ```
 # See logind.conf(5) for details.
 
