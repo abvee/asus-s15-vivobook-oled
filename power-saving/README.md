@@ -169,9 +169,25 @@ gnome
 * Closing the laptop lid again, does nothing, ie, screen doesn't lock, and the
 laptop stays powered on
 
+As noted by @naveenjohnsonv, this seems to be an issue on Windows as 
+well.
+[This](https://zentalk.asus.com/t5/zenbook/zenbook-13-ux325-fn-keys-not-working-after-sleep-anyone/m-p/78104)
+forum post is about the ASUS ZenBook 13 facing the same problem described on
+Windows as well. This might be a firmware bug that spans multiple ASUS laptops
+at the moment.
+
+@naveenjohnsonv also noted that switching to S0 sleep on Windows fixed the
+issue, but S0 doesn't exist for my variant of K305* , atleast on the Arch Linux
+kernel 6.1.8, or the latest fedora 36 kernel. If anyone has a kernel or
+patch that enables S0 sleep, I request you to open an issue to tell me about it.
+
 Switching it to `[s2idle]` is not a lot better, and suffers from these problems:
+* The worst offender is that after waking from sleep, shutdown does not occur as
+normal. Systemd starts a stop job that terminates after an infinite time to
+close the user session (usually 1000 on my single user system), and it never
+closes, forcing me to hard shutdown.
 * If on a tty, dmesg warnings are written to the screen
-* The same warnings appear in `dmesg` for some reason
+* The same warnings appear in `dmesg`
 * Fans get super loud for whatever reason, and laptop is hot
 * battery of course, drains like Romans draining a swamp
 
