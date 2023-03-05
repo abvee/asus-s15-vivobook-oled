@@ -38,5 +38,5 @@ fixes the issue:
 ```
 bluetooth_policy.policy["media-role.use-headset-profile"] = false
 ```
-This is on wireplumber. If you are using `pipewire-media-session`, refer to the
+This is on wireplumber. If you are using `pipewire-media-session`, refer to [this](https://wiki.archlinux.org/title/PipeWire#Bluetooth_devices)
 Arch Wiki article on pipewire.
