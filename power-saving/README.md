@@ -38,35 +38,56 @@ thing in python or any other high level language.
 
 Power relevant kernel parameters I put in `/etc/default/grub`:
 
-`GRUB_CMDLINE_LINUX_DEFAULT="intel_pstate=disable mem_sleep_default=deep
-nmi_watchdog=0"` 
-### intel\_pstate=disable
+`GRUB_CMDLINE_LINUX_DEFAULT="mem_sleep_default=deep nmi_watchdog=0"` 
+### intel\_pstate
 This has to do with drivers controlling cpu frequency. By default, most kernels
 will use the `intel_pstate` driver. Usually, a fallback driver is
 `acpi_cpufreq`.
 
-Intel Pstate on this laptop is a large pile of horse shit. For one, `cpupower`
-settings don't work (see later section on cpupower). The CPU is constantly stuck
-at a minimum frequency of 3.1 GHz, and
+The initial reason for doing this is that `cpupower` did not seem to work when I
+used the `intel_pstate` governor. I monitered frequencies with
+`watch grep -i mhz /proc/cpuinfo`, and it showed that most cores were running at
+a constant 3.1GHz. However, switching to `acpi_cpufreq` allowed `cpupower` to
+work flawlessly, and I could set the cpu frequency to whatever I desired. This
+was the initial reason for disabling the `intel_pstate` driver.
 
-`echo powersave > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor`
+However, upon further
+testing in a newer kernel (6.3.9), there are some interesting observations to be
+made.
 
-does nothing at all.
+#### Power usage and CPU Frequency discrepancies
+For one, the power usage as monitored above, returns lower power draw than if I
+were to use just the `acpi_cpufreq` driver. It consistently draws 5-6 Watts
+rather than the 7-8 Watts when the battery is high, and draws <++> Watts
+compared to the 2-5 Watts when the battery is low.
 
-However, the `acpi_cpufreq` driver responds correctly, so we will use it.
+Furthermore, the actual realtime cpufrequency is a bit questionable. While
+`watch grep -i mhz /proc/cpuinfo` returns earch cpu core running at mostly
+3.1GHz the entire time, running `cpupower frequency-info|grep -i kernel` reveals
+that the cpu frequency is actually sitting around the 1GHz mark.
 
-There one caveat however. Running `cpupower frequency-info` when we are using
-the `acpi_cpufreq` driver gives us this line:
-```
-hardware limits: 400 MHz - 3.10 GHz
-```
-Basically, we are limited to 3.10GHz instead of the advertised 4.5GHz on this
-laptop if we use this driver. That is a sacrifice I'm willing to make for more
-battery life, as I know if I need the performance, I can always switch back to
-the `intel_pstate` driver by deleting this option in the kernel line
-, but your preference may vary. It is also possible
-that with future kernel updates, the pstate driver becomes the better option, so
-I'm gonna keep testing both drivers every time there is a kernel update.
+There have been [other issues](https://github.com/htop-dev/htop/issues/953)
+saying that cpu frequency is not being reported correctly by `/proc/cpuinfo`.
+All of them advice to use `cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq`
+instead, but on my laptop, that gives the same values as `/proc/cpuinfo`.
+
+#### Energy savings with intel\_pstate
+[This](https://wiki.archlinux.org/title/CPU_frequency_scaling#Autonomous_frequency_scaling)
+section of the Archwiki (at the bottom) also says intel and amd cpus using their
+respective pstate drivers will regulate themselves, and provide two governors:
+powersave and performance.
+
+It goes on to say that these are not like other governors, and that these levels
+are translated to energy performance preference hints for the cpu's internal
+governor. As a result, they both provide dynamic scaling, similar to schedutil
+and ondemand.
+
+It also claims that the performance governor should give better power saving
+than the old ondemand governor.
+
+#### Conclusion
+I have decided to test out if `intel\_pstate` really saves power, as well as
+which file/program to rely on for accurate cpu  frequency reporting.
 
 ### mem\_sleep\_default=deep and sleep in general
 Output of `cat /sys/power/state`:
@@ -243,7 +264,9 @@ exist for it.
 This is a very simple section about how you can use cpupower to set the governor
 and limit maximum frequency.
 
-### Scaling governors
+### Scaling with acpi\_cpufreq
+
+#### Scaling governors
 As recalled in the "Kernel Parameters" section, we are using the `acpi_cpufreq`
 driver and not the `intel_pstate` driver. Thus, by default we are using the
 `schedutil` scaling governor, which can be seen in this file:
@@ -273,7 +296,8 @@ governor='powersave'
 max_freq="1.4GHz"
 ```
 Your file might contain more detailed documentation ;)
-### Scaling frequencies
+
+#### Scaling frequencies
 Also in `/sys/devices/system/cpu/cpu0/cpufreq/` are the 2 files:
 * `scaling_max_freq` which sets max frequency
 * `scaling_min_freq` which sets min frequency
@@ -281,7 +305,33 @@ Also in `/sys/devices/system/cpu/cpu0/cpufreq/` are the 2 files:
 As usual, these can be set manually by echoing values to them, but using
 `cpupower` is just more convinient.
 
-## Problem
+### Scaling with intel\_pstate
+Refer to the `intel_pstate` section on why I am using the `intel_pstate`
+governor.
+
+#### Setting scaling governor
+Similar to how you set the governor for `acpi_cpufreq`, just that there are only
+2 options. One is `powersave` and the other is `performance`. As mentioned
+above, this controls their energy performance preference hint. I'm currently
+using `powersave`.
+
+#### Setting performance and energy bias hint
+Just set it in the `/etc/default/cpupower` file, and set the `perf_bias` option
+to 15. Refer to
+[this](https://wiki.archlinux.org/title/CPU_frequency_scaling#Intel_performance_and_energy_bias_hint)
+section in the Arch Wiki for what values mean what.
+
+`/etc/default/cpupower - for intel_pstate`
+```
+governor='powersave'
+
+perf_bias=15
+```
+**NOTE:** I have chosen to not limit minimum and maximum cpu frequencies because
+I don't know if it's even having an effect thanks to the missreporting from
+`/proc/cpuinfo`.
+
+## Problems
 Idle power usage changes with battery level. For whatever reason, idle power
 draw when the battery level is higher is also higher.
 
@@ -295,12 +345,10 @@ request, or even just creating an issue.
 ## Results
 Previously, without any configuration, Fedora with GNOME would idle at around
 7-8 W. Switching to Arch and using something lighter (sway) reduced that number
-to around 5-6 W on idle.
-
-After all the configuration however, The system idles at nearly 3.4-4 W when
-doing nothing, and rarely goes beyond 10W even when running firefox. There are
-still a number of power saving things that I have not done, like ASPM and
-powering off bluetooth when not in use. If I can get it to 3W on idle, I would
-be very happy.
+to around 5-6 W on idle, when battery is high (refer previous problem section).
 
 As it is now however, it is perfectly usable, and you get decent battery life.
+
+### intel\_pstate results
+The system idles at a very low 5.3 Watts when on 80% charge, though cpu
+frequency is reported to be very high.
