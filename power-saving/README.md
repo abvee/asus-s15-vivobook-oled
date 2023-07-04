@@ -237,7 +237,7 @@ like that might half work, and half not work, so I'm not gonna try it.
 
 Either ways, I'll probably try a service which echos "powersave" or
 "powersupersave" to the required file later on, even though no module should
-exit for it.
+exist for it.
 
 ## cpupower
 This is a very simple section about how you can use cpupower to set the governor

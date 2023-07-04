@@ -40,3 +40,6 @@ bluetooth_policy.policy["media-role.use-headset-profile"] = false
 ```
 This is on wireplumber. If you are using `pipewire-media-session`, refer to [this](https://wiki.archlinux.org/title/PipeWire#Bluetooth_devices)
 Arch Wiki article on pipewire.
+
+***NOTE:*** as of pipewire version 0.3.71, this no longer occurs, and the file
+can be removed or commented out with `--` as per the lua language.
