@@ -245,20 +245,21 @@ options iwlmvm power_scheme=3
 The `iwlmvm` option is there because for some reason, that module uses the
 `iwlwifi` module, and the wiki asks me to put that line in as well.
 ### ASPM
-Active state Power management should not exist on this model of laptop, because
-the command `lspci -vv|grep -i aspm` returns absolutely nothing.
+Active State Power Management (ASPM) exists on this model, because running
+```
+lspci -vv|grep 'ASPM.*abled'
+```
+returns that ASPM is enabled.
 
-However, other things that relate to ASPM like this file:
-`/sys/module/pcie_aspm/parameters/policy` that dictate ASPM policy exist. I am
-unsure as to if ASPM exists or not on this computer, especially, since I can
-write "powersave" to that file, which should not work unless ASPM exits.
-
-I can always try and force it with kernel line `pcie_aspm=force`, but I feel
-like that might half work, and half not work, so I'm not gonna try it.
-
-Either ways, I'll probably try a service which echos "powersave" or
-"powersupersave" to the required file later on, even though no module should
-exist for it.
+`/sys/module/pcie_aspm/parameters/policy` dictates ASPM policy. You can check
+all the ASPM policies by running:
+```
+cat /sys/module/pcie_aspm/parameters/policy
+```
+You can then set it permenantly by setting a kernel parameter:
+```
+pcie_aspm.policy=powersave
+```
 
 ## cpupower
 This is a very simple section about how you can use cpupower to set the governor
