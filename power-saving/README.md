@@ -109,7 +109,7 @@ In breif however,
 * `disk` stands for hibernation
 * `s2idle` in the `mem_sleep` file gives the value of `s2idle` to mem in the
 `state` file.
-* `deep` in the `mem_sleep` file gives the value of `s2idle` to `mem` in the
+* `deep` in the `mem_sleep` file gives the value of `deep` to `mem` in the
 `state` file. Stands for `suspend to RAM` or `S3` sleep
 
 On the laptop, I want this type of sleep to only occur when the lid is closed,
