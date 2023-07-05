@@ -331,6 +331,26 @@ perf_bias=15
 I don't know if it's even having an effect thanks to the missreporting from
 `/proc/cpuinfo`.
 
+#### Setting energy preference
+The Arch Wiki states that most modern CPUs don't rely on the ACPI P-state, and
+just scale according to their internal governors. However, there is
+[this](https://wiki.archlinux.org/title/Power_management#Processors_with_Intel_HWP_\(Intel_Hardware_P-state\)\_support\))
+section that says that processors that support HWP (hardware P-states), which I
+think this one does can choose between one of the options in the file: 
+```
+/sys/devices/system/cpu/cpufreq/policy?/energy_performance_available_preferences
+```
+The one that optimises for power seems to be the `power` option. We modify a
+file in `/etc/tmpfiles.d` to set this option:
+`/etc/tmpfiles.d/energy_performance_preference.conf`
+```
+w /sys/devices/system/cpu/cpufreq/policy?/energy_performance_preference - - - - balance_power
+```
+We can confirm that the option has been set:
+```
+cat /sys/devices/system/cpu/cpufreq/policy?/energy_performance_preference
+```
+
 ## Problems
 Idle power usage changes with battery level. For whatever reason, idle power
 draw when the battery level is higher is also higher.
