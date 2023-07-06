@@ -180,7 +180,7 @@ and locks the screen before the laptop is put to sleep.
 #### Problems with sleep
 However, not everything is sunshine and roses.
 
-Currently, I'm using `[deep]` by default, so let's start with that. Sleeping
+Using `[deep]` sleep, so let's start with that. Sleeping
 only works once, ie, when I first close the lid, the laptop goes to sleep
 correctly. However, when I resume from sleep, a number of things go wrong:
 * Function hotkeys stop working
@@ -203,19 +203,23 @@ kernel 6.1.8, or the latest fedora 36 kernel. If anyone has a kernel or
 patch that enables S0 sleep, I request you to open an issue to tell me about it.
 
 Switching it to `[s2idle]` is not a lot better, and suffers from these problems:
-* The worst offender is that after waking from sleep, shutdown does not occur as
+* ~~The worst offender is that after waking from sleep, shutdown does not occur as
 normal. Systemd starts a stop job that terminates after an infinite time to
 close the user session (usually 1000 on my single user system), and it never
-closes, forcing me to hard shutdown.
-* If on a tty, dmesg warnings are written to the screen
-* The same warnings appear in `dmesg`
-* Fans get super loud for whatever reason, and laptop is hot
+closes, forcing me to hard shutdown.~~
+**NOTE:** This is solved as of kernel 6.3.9 and the laptop shuts down like
+normal
+* ~~If on a tty, dmesg warnings are written to the screen~~. Solved as of kernel
+6.3.9
+* Warnings appear in `dmesg`
+* ~~Fans get super loud for whatever reason, and laptop is hot~~ Not tested.
+Installing nbfc\_linux seems to have solved the issue though.
 * battery of course, drains like Romans draining a swamp
 
 Sleep seems to be a glorious mess. S0 sleep / Modern standby or even regular
 standby (S1) don't seem to exist. S3 is the only sleep state to exist apart from
 hibernation through the `[deep]` option, and `[s2idle]` might as well not exist
-becuase it is practically useless.
+becuase it is practically useless, since it conserves no battery.
 
 ### nmi\_watchdog=0
 This kernel option seems to do nothing at all, because `pgrep watchdog` still
