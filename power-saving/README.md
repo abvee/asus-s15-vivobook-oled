@@ -264,6 +264,14 @@ You can then set it permenantly by setting a kernel parameter:
 ```
 pcie_aspm.policy=powersave
 ```
+### Turbo Boost
+Similar to setting `energy_performance_preference` with `tmpfiles` (see later
+on), we can edit a file in `/etc/tmpfiles.d` with the `.conf` ending. We can
+then put this line inside it:
+```
+w /sys/devices/system/cpu/intel_pstate/no_turbo - - - - 1
+```
+This disables turbo boost. Some people may want this enabled for higher power.
 
 ## cpupower
 This is a very simple section about how you can use cpupower to set the governor
