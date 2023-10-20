@@ -4,6 +4,11 @@ A good place to start is always the Arch Wiki. See
 graphics for full details.
 ## GUC
 You can safely enable GUC / HUC since this is an Alder lake 12th gen platform.
+Refer to the Arch Wiki linked above on how to enable them. TL;DR, put this in
+your kernel command line:
+```
+i915.enable_guc=3
+```
 
 ## SR-IOV
 In progress...
