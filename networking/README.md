@@ -24,3 +24,7 @@ NameResolvingService=systemd
 ```
 Start and enable iwd, and you should have internet. Follow [this](https://wiki.archlinux.org/title/iwd) Arch Wiki page on
 iwd for more information on how to connect and do other things
+## virtual machines and libvirt
+I would refer you to [this](https://www.youtube.com/watch?v=6435eNKpyYw) video.
+It does a far better job of explaining the default setup libvirt than I could
+ever hope to.
