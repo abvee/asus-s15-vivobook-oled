@@ -1,5 +1,13 @@
+# Index
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
+- [ASUS S-15 Vivobook (and related laptops) linux configuration](#asus-s-15-vivobook-and-related-laptops-linux-configuration)
+- [Keyboard](#keyboard)
+   * [Issues](#issues)
+      + [Symless media keys](#symless-media-keys)
+   * [Function key configuration](#function-key-configuration)
+- [Bluetooth](#bluetooth)
+<!-- TOC end -->
 # ASUS S-15 Vivobook (and related laptops) linux configuration
-
 A list of all configuration I have done on this particular laptop while I
 have had it.
 
@@ -12,30 +20,26 @@ Details of my particular model:
 Note that all the contents have been tested only for the kernel version given
 above. Any problems with older kernel *might* be present in previous versions of
 the article, but any kernels after are untested.
-
-## Common Problems:
-### Keyboard
+# Keyboard
+## Issues
 Any kernel before 6.1 needs an irq override patch, and will not work without it.
 
 The patch in question can be found
 [here](https://bugzilla.kernel.org/attachment.cgi?id=301559&action=diff).
 
 Rebuild the kernel after applying this.
-
 ### Symless media keys
 The media keys for `F8` and `F7` don't show any syms when checked with `wev` as
 though they don't exist.
-
-## Common Configuration
+## Function key configuration
 Function keys and not media keys are set by default. So pressing `F5` doesn't
-increase the volume. This is highly annoying, and to change it,
+increase the volume. This is very annoying, and to change it,
 put this in your `/etc/modprobe.d/*name of your choice*.conf`:
 ```
 options asus_wmi fnlock_default=N
 ```
 You can find the current value in `/sys/module/asus_wmi/parameters/fnlock_default`
-
-## Bluetooth
+# Bluetooth
 My headphones don't like when pipewire does automatic switching of HSP/HFP and
 A2DP profiles, and it crackles the audio.
 

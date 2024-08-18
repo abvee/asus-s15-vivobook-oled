@@ -1,3 +1,28 @@
+# Index
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
+- [Monitoring](#monitoring)
+   * [Monitoring Power](#monitoring-power)
+   * [Monitoring CPU frequency](#monitoring-cpu-frequency)
+- [Kernel Parameters](#kernel-parameters)
+   * [nmi\_watchdog=0](#nmi_watchdog0)
+- [CPU configuration](#cpu-configuration)
+   * [Scaling Drivers](#scaling-drivers)
+      + [Problems with intel_pstate](#problems-with-intel_pstate)
+      + [Power usage and CPU Frequency discrepancies between drivers](#power-usage-and-cpu-frequency-discrepancies-between-drivers)
+   * [Scaling Governors](#scaling-governors)
+      + [intel_pstate governors](#intel_pstate-governors)
+      + [acpi_cpufreq governors](#acpi_cpufreq-governors)
+   * [Scaling frequencies](#scaling-frequencies)
+   * [Setting performance and energy bias hint for intel_pstate](#setting-performance-and-energy-bias-hint-for-intel_pstate)
+   * [Setting energy preference for intel_pstate](#setting-energy-preference-for-intel_pstate)
+   * [Turbo Boost](#turbo-boost)
+- [Sleep](#sleep)
+   * [Problems with deep sleep or S3 idle](#problems-with-deep-sleep-or-s3-idle)
+      + [Problems with s2idle](#problems-with-s2idle)
+- [Module configuration](#module-configuration)
+   * [wifi](#wifi)
+   * [NVME ssd](#nvme-ssd)
+<!-- TOC end -->
 This is to document all the power saving steps I took on the ASUS S15 OLED,
 version K3502ZA.306 (306 is the current BIOS version).
 
